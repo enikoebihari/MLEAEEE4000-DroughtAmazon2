@@ -160,6 +160,66 @@ def pytorch_train(model, optimizer, criterion, device, num_epochs, train_loader,
    
     return train_losses, val_losses
 
+def pytorch_train2(model, optimizer, criterion, device, num_epochs, train_loader, val_loader):
+    best_val_loss = float('inf')
+    patience_counter = 0
+    patience = 20
+    
+    train_losses = []
+    val_losses = []
+    
+    for epoch in range(num_epochs):
+        # ----- TRAINING -----
+        model.train()
+        train_loss = 0.0
+        for batch_X, batch_y in train_loader:
+            batch_X = batch_X.to(device)
+            batch_y = batch_y.to(device)
+
+            optimizer.zero_grad()
+
+            outputs, feature_attn, time_attn = model(batch_X)
+
+            loss = criterion(outputs, batch_y)
+
+            loss.backward()
+            optimizer.step()
+
+            train_loss += loss.item()
+
+        # ----- VALIDATION -----
+        model.eval()
+        val_loss = 0.0
+        with torch.no_grad():
+            for batch_X, batch_y in val_loader:
+                batch_X = batch_X.to(device)
+                batch_y = batch_y.to(device)
+
+                outputs, feature_attn, time_attn = model(batch_X)
+
+                loss = criterion(outputs, batch_y)
+                val_loss += loss.item()
+
+        train_loss /= len(train_loader)
+        val_loss /= len(val_loader)
+
+        train_losses.append(train_loss)
+        val_losses.append(val_loss)
+
+        print(f'Epoch {epoch+1}/{num_epochs}, Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}')
+
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            patience_counter = 0
+        else:
+            patience_counter += 1
+            if patience_counter >= patience:
+                print(f'Early stopping at epoch {epoch+1}')
+                break
+
+    return train_losses, val_losses
+
+
 def pytorch_train_VAE(model, optimizer, criterion, device, num_epochs, train_loader, val_loader):
     best_val_loss = float('inf')
     patience_counter = 0

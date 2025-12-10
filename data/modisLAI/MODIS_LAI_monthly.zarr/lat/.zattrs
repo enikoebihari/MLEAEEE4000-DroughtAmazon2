@@ -1,7 +1,0 @@
-{
-  "long_name": "coordinate latitude",
-  "units": "degrees_north",
-  "_ARRAY_DIMENSIONS": [
-    "lat"
-  ]
-}
