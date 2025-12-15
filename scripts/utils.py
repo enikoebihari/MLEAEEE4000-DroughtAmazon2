@@ -80,8 +80,8 @@ def get_rmse(truth, pred):
 
 def plot_history(train_losses, val_losses):
     plt.figure()
-    plt.plot(train_losses, label='Training Loss')
-    plt.plot(val_losses, label='Validation Loss')
+    plt.plot(train_losses, label='Training Loss',color="tab:red")
+    plt.plot(val_losses, label='Validation Loss',color="tab:green")
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.legend()
